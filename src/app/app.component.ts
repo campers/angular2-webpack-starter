@@ -5,6 +5,7 @@ import { Component, ViewEncapsulation } from '@angular/core';
 import { RouteConfig, Router } from '@angular/router-deprecated';
 
 import { AppState } from './app.service';
+import { Login } from './login';
 import { Home } from './home';
 import { RouterActive } from './router-active';
 
@@ -36,6 +37,12 @@ import { RouterActive } from './router-active';
           <button md-button router-active [routerLink]=" ['About'] ">
             About
           </button>
+          <button md-button router-active [routerLink]=" ['Login'] ">
+            Login
+          </button>
+          <button md-button router-active [routerLink]=" ['Logout'] ">
+            Logout
+          </button>
       </md-toolbar>
 
       <md-progress-bar mode="indeterminate" color="primary" *ngIf="loading"></md-progress-bar>
@@ -52,7 +59,8 @@ import { RouterActive } from './router-active';
   `
 })
 @RouteConfig([
-  { path: '/',      name: 'Index', component: Home, useAsDefault: true },
+  { path: '/login',  name: 'Login',  component: Login, useAsDefault: true  },
+  { path: '/',      name: 'Index', component: Home},
   { path: '/home',  name: 'Home',  component: Home },
   // Async load a component using Webpack's require with es6-promise-loader and webpack `require`
   { path: '/about', name: 'About', loader: () => require('es6-promise!./about')('About') }

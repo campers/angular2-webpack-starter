@@ -137,7 +137,10 @@ module.exports = {
      * See: http://webpack.github.io/docs/configuration.html#module-loaders
      */
     loaders: [
-
+      {
+        test: /\.jade$/,
+        loader: 'jade'
+      },
       /*
        * Typescript loader support for .ts and Angular 2 async routes via .async.ts
        *
