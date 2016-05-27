@@ -1,38 +1,62 @@
-import { Injectable, Component, provide } from '@angular/core';
+import { Injectable, Component, EventEmitter, provide } from '@angular/core';
 import { ServerService } from '../server/index';
 import {LocalJWT} from "../local-jwt/local-jwt";
+import {Log} from "../log/log.service";
+import {JwtHelper} from "angular2-jwt/angular2-jwt";
+import {tokenNotExpired} from "angular2-jwt/angular2-jwt";
 
 
 @Injectable()
 @Component({
-  providers: [ServerService, LocalJWT],
+  //providers: [LocalJWT, JwtHelper,tokenNotExpired],
+
 })
 export class AuthService {
 
-  constructor(private serverService: ServerService, private jwt: LocalJWT) {}
+  private userLoggedOut = new EventEmitter<any>()
+  private jwtHelper: JwtHelper = new JwtHelper()
+
+  constructor(private serverService: ServerService, private jwt: LocalJWT, private log:Log) {}
+
 
   public isAuthenticated(): boolean {
 
-    return this.jwt.;
+    let jwt = this.jwt.fetchJWT()
+    if(!jwt) {
+      this.log.info('AuthService: No JWT token')
+      return false
+    }
+
+    const expired = this.jwtHelper.isTokenExpired(jwt)
+    if(expired) {
+      this.log.info('AuthService: JWT has expired')
+      return false
+    }
+
+    return true
   }
 
+  public getLoggedOutEvent() {
+    return this.userLoggedOut
+  }
 
-  public login(username: string, password: string): Promise<any> {
+  public activateAccount(key) {
+    return this.serverService.postP('/activate', {key: key})
+  }
 
-    return this.serverService.postP('/authenticate', {username: username, password: password})
+  public login(username: string, password: string, rememberMe: boolean): Promise<any> {
+    return this.serverService.postP('/authenticate', {username: username, password: password, rememberMe: rememberMe})
       .then(response => {
-        console.log('authenticate response', response)
+        this.log.debug('authenticate response', response)
+        // TODO if rememberMe store in localStorage, else store in sessionStorage. Check both when getting the jwt, and clear both on logout
         this.jwt.saveJWT(response['id_token'])
       })
-    //return new Promise((resolve, reject) => {
-    //  return this.serverService.post('/auth/login',
-    //    {username: username, password: password})
-    //    .map((response: any) => response.meta)
-    //    .subscribe(
-    //      user => resolve(user),
-    //      err => reject({username, password})
-    //    );
-    //});
+  }
+
+  public logout() {
+    this.log.debug('logout()')
+    this.jwt.removeJWT()
+    this.userLoggedOut.emit(null)
   }
 
   public social(type: string, scope: string, csrf: string): Promise<any> {
@@ -42,15 +66,6 @@ export class AuthService {
         console.log('social authenticate response', response)
         this.jwt.saveJWT(response['id_token'])
       })
-    //return new Promise((resolve, reject) => {
-    //  return this.serverService.post('/auth/login',
-    //    {username: username, password: password})
-    //    .map((response: any) => response.meta)
-    //    .subscribe(
-    //      user => resolve(user),
-    //      err => reject({username, password})
-    //    );
-    //});
   }
 
   public register(username: string, email: string, password: string): Promise<any> {
@@ -59,16 +74,7 @@ export class AuthService {
       .then(response => {
         this.jwt.saveJWT(response['id_token'])
       })
-
-    //return new Promise((resolve, reject) => {
-    //  return this.serverService.post('/auth/register',
-    //    {username: username, password: password})
-    //    .map((response: any) => response.meta)
-    //    .subscribe(
-    //      (user) => resolve(user),
-    //      err => reject({username, password})
-    //    );
-    //});
   }
 }
+
 

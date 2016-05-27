@@ -101,10 +101,9 @@ export class SocialAuth {
   }
 }
 
-
+@Directive({})
 @Component({
   selector: 'login-form',
-  providers: [AuthService, ServerService],
   directives: [MD_INPUT_DIRECTIVES,...[SocialAuth, GoogleAuth]],
   //pipes: [],
   // Our list of styles in our component. We may add more to compose many styles together
@@ -121,6 +120,8 @@ export class SocialAuth {
           ngControl="password" placeholder="Password" type="password" #password="ngForm">
         </md-input>
         <div *ngIf="!password.valid">Password is required</div>
+        <br/>
+        <md-checkbox ngControl="rememberMe" #rememberMe="ngForm">Remember Me</md-checkbox>
         <br/>
         <div *ngIf="serverError">{{serverError}}</div>
         <br/>
@@ -143,15 +144,14 @@ export class LoginForm  {
   ngOnInit() {
     this.f = this.formBuilder.group({
       username: ['', Validators.compose([Validators.required])],
-      password: ['', Validators.compose([Validators.required])]
+      password: ['', Validators.compose([Validators.required])],
+      rememberMe: ['']
     })
   }
 
   onSubmit(form) {
     this.serverError = ''
-    console.log('login', this.f.controls['password'])
-    console.log('submitting form..', this.f.controls['username'].value, this.f.controls['password'].value)
-    this.authService.login(this.f.controls['username'].value, this.f.controls['password'].value)
+    this.authService.login(this.f.controls['username'].value, this.f.controls['password'].value, this.f.controls['rememberMe'].value)
       .then(user => {
         this.router.navigateByUrl('/home')
       }, error => {
@@ -163,10 +163,10 @@ export class LoginForm  {
 
 }
 
-
+@Directive({})
 @Component({
   selector: 'register-form',
-  directives: [MD_INPUT_DIRECTIVES],
+  //directives: [MD_INPUT_DIRECTIVES],
   //pipes: [],
   styles: [require('./login.css')],
   template: `
@@ -244,7 +244,6 @@ export class RegisterForm  {
   // where, in this case, selector is the string 'home'
   selector: 'login',  // <login></login>
   // We need to tell Angular's Dependency Injection which providers are in our app.
-  providers: [AuthService, ServerService],
   // We need to tell Angular's compiler which directives are in our template.
   // Doing so will allow Angular to attach our behavior to an element
   directives: [LoginForm, RegisterForm],

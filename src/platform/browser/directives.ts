@@ -9,6 +9,7 @@ import { ROUTER_DIRECTIVES } from '@angular/router-deprecated';
 // Angular 2 Material 2
 // TODO(gdi2290): replace with @angular2-material/all
 import { MATERIAL_DIRECTIVES } from './angular2-material2';
+import {LoggedInRouterOutlet} from "../../app/auth/LoggedInOutlet";
 
 //import {MATERIAL_DIRECTIVES as NG2_MATERIAL_DIRECTIVES, MATERIAL_PROVIDERS} from "ng2-material";
 
@@ -16,6 +17,7 @@ import { MATERIAL_DIRECTIVES } from './angular2-material2';
 export const APPLICATION_DIRECTIVES = [
   ...ROUTER_DIRECTIVES,
   ...MATERIAL_DIRECTIVES,
+  ...[LoggedInRouterOutlet]
   //...NG2_MATERIAL_DIRECTIVES,
   //...MATERIAL_PROVIDERS
 ];

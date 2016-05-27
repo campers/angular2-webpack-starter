@@ -8,6 +8,8 @@ import { AppState } from './app.service';
 import { Login } from './login';
 import { Home } from './home';
 import { RouterActive } from './router-active';
+import { AuthService } from "../services/auth/index";
+import { ActivateAccount } from "./account/activate/index";
 
 /*
  * App Component
@@ -34,26 +36,24 @@ import { RouterActive } from './router-active';
           <button md-button router-active [routerLink]=" ['Home'] ">
             Home
           </button>
-          <button md-button router-active [routerLink]=" ['About'] ">
+          <button *ngIf="authService.isAuthenticated()" md-button router-active [routerLink]=" ['About'] ">
             About
           </button>
-          <button md-button router-active [routerLink]=" ['Login'] ">
+          <button *ngIf="!authService.isAuthenticated()" md-button router-active [routerLink]=" ['Login'] ">
             Login
           </button>
-          <button md-button router-active [routerLink]=" ['Logout'] ">
+          <button *ngIf="authService.isAuthenticated()" (click)="logout()" md-button>
             Logout
           </button>
+
       </md-toolbar>
 
       <md-progress-bar mode="indeterminate" color="primary" *ngIf="loading"></md-progress-bar>
 
-      <router-outlet></router-outlet>
-
-      <pre class="app-state">this.appState.state = {{ appState.state | json }}</pre>
+      <auth-router-outlet></auth-router-outlet>
 
       <footer>
-        <img [src]="angularclassLogo" width="6%">
-        WebPack Angular 2 Starter by <a [href]="url">@AngularClass</a>
+        Kava by <a [href]="url">AppOrchestra</a>
       </footer>
       </md-content>
   `
@@ -62,30 +62,27 @@ import { RouterActive } from './router-active';
   { path: '/login',  name: 'Login',  component: Login, useAsDefault: true  },
   { path: '/',      name: 'Index', component: Home},
   { path: '/home',  name: 'Home',  component: Home },
+  { path: '/activate',  name: 'Activate',  component: ActivateAccount },
   // Async load a component using Webpack's require with es6-promise-loader and webpack `require`
   { path: '/about', name: 'About', loader: () => require('es6-promise!./about')('About') }
 ])
 export class App {
-  angularclassLogo = 'assets/img/angularclass-avatar.png';
   loading = false;
   name = 'Angular 2 Webpack Starter';
   url = 'https://twitter.com/AngularClass';
 
   constructor(
-    public appState: AppState) {
+    public appState: AppState, public authService: AuthService, private router: Router) {
 
+  }
+
+  private logout() {
+    this.authService.logout()
   }
 
   ngOnInit() {
     console.log('Initial App State', this.appState.state);
+    this.authService.getLoggedOutEvent().subscribe(() => this.router.navigate(['Login']))
   }
 
 }
-
-/*
- * Please review the https://github.com/AngularClass/angular2-examples/ repo for
- * more angular app examples that you may copy/paste
- * (The examples may not be updated as quickly. Please open an issue on github for us to update it)
- * For help or questions please contact us at @AngularClass on twitter
- * or our chat on Slack at https://AngularClass.com/slack-join
- */

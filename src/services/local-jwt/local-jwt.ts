@@ -1,7 +1,11 @@
 import {Injectable} from '@angular/core';
 
+// TODO update to be more like <jhipster>/src/main/webapp/app/services/auth/auth.jwt.service.js
 @Injectable()
 export class LocalJWT {
+
+  private jwt:string
+
   parseJWT(jwt: string): any {
     var jwtDecoded = null;
 
