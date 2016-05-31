@@ -103,11 +103,7 @@ export class SocialAuth {
 
 @Component({
   selector: 'login-form',
-  directives: [MD_INPUT_DIRECTIVES,...[SocialAuth, GoogleAuth]],
-  //pipes: [],
-  // Our list of styles in our component. We may add more to compose many styles together
-  styles: [require('./login.css')],
-  // Every Angular template is first compiled by the browser before Angular runs it's compiler
+  directives: [...[SocialAuth, GoogleAuth]],
   template: `
     <form [ngFormModel]="f" (ngSubmit)="onSubmit()" autocomplete="off">
         <md-input
@@ -165,9 +161,6 @@ export class LoginForm  {
 
 @Component({
   selector: 'register-form',
-  //directives: [MD_INPUT_DIRECTIVES],
-  //pipes: [],
-  styles: [require('./login.css')],
   template: `
     <form [ngFormModel]="f" (ngSubmit)="onSubmit()" autocomplete="off">
         <md-input
@@ -236,15 +229,8 @@ export class RegisterForm  {
 
 
 
-
-
 @Component({
   selector: 'reset-password-init',
-  //directives: [MD_INPUT_DIRECTIVES,...[SocialAuth, GoogleAuth]],
-  //pipes: [],
-  // Our list of styles in our component. We may add more to compose many styles together
-  //styles: [require('./login.css')],
-  // Every Angular template is first compiled by the browser before Angular runs it's compiler
   template: `
     <div *ngIf="!emailSent">
       <form [ngFormModel]="f" (ngSubmit)="onSubmit()" autocomplete="off">
@@ -291,8 +277,6 @@ export class ResetPasswordInit  {
       })
   }
 }
-
-
 
 
 

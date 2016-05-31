@@ -58,7 +58,7 @@ import { ActivateAccount } from "./account/activate/index";
             Logout
           </button>
 
-          <md-icon>home</md-icon>
+          <!--<md-icon>home</md-icon>-->
 
       </md-toolbar>
 
