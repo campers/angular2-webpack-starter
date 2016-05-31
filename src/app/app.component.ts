@@ -26,7 +26,19 @@ import { ActivateAccount } from "./account/activate/index";
     require('./app.css')
   ],
   template: `
-    <md-content>
+    <md-sidenav-layout>
+
+      <md-sidenav #start (open)="mybutton.focus()" [opened]="false" [mode]="push">
+        Start Sidenav.
+        <br>
+        <button md-button #mybutton (click)="start.close()">Close</button>
+      </md-sidenav>
+      <md-sidenav #end align="end">
+        End Sidenav.
+        <button md-button (click)="end.close()">Close</button>
+      </md-sidenav>
+
+
       <md-toolbar color="primary">
           <span>{{ name }}</span>
           <span class="fill"></span>
@@ -46,6 +58,8 @@ import { ActivateAccount } from "./account/activate/index";
             Logout
           </button>
 
+          <md-icon>home</md-icon>
+
       </md-toolbar>
 
       <md-progress-bar mode="indeterminate" color="primary" *ngIf="loading"></md-progress-bar>
@@ -55,7 +69,7 @@ import { ActivateAccount } from "./account/activate/index";
       <footer>
         Kava by <a [href]="url">AppOrchestra</a>
       </footer>
-      </md-content>
+    </md-sidenav-layout>
   `
 })
 @RouteConfig([

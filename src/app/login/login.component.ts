@@ -101,7 +101,6 @@ export class SocialAuth {
   }
 }
 
-@Directive({})
 @Component({
   selector: 'login-form',
   directives: [MD_INPUT_DIRECTIVES,...[SocialAuth, GoogleAuth]],
@@ -114,21 +113,18 @@ export class SocialAuth {
         <md-input
           ngControl="username" placeholder="Username" autofocus #username="ngForm">
         </md-input>
-        <div *ngIf="!username.valid">Username is required</div>
-        <br/>
+        <div *ngIf="!username.valid && submitted" class="error-msg">Username is required</div>
         <md-input
           ngControl="password" placeholder="Password" type="password" #password="ngForm">
         </md-input>
-        <div *ngIf="!password.valid">Password is required</div>
-        <br/>
+        <div *ngIf="!password.valid && submitted" class="error-msg">Password is required</div>
         <md-checkbox ngControl="rememberMe" #rememberMe="ngForm">Remember Me</md-checkbox>
-        <br/>
-        <div *ngIf="serverError">{{serverError}}</div>
-        <br/>
-        <button [disabled]="!f.valid" md-raised-button color="primary">Login</button>
+        <div *ngIf="serverError" class="error-msg">{{serverError}}</div>
+        <br/><br/>
+        <button md-raised-button color="primary">Login</button>
       </form>
+      <br/>
       <google-auth></google-auth>
-      <social-auth type="google"></social-auth>
       <social-auth type="facebook"></social-auth>
       <social-auth type="linkedin"></social-auth>
   `
@@ -137,6 +133,7 @@ export class LoginForm  {
 
   f: ControlGroup
   serverError: string
+  submitted: boolean = false
 
   constructor(public appState:AppState, private formBuilder: FormBuilder, private authService: AuthService, private router: Router) {
   }
@@ -150,7 +147,11 @@ export class LoginForm  {
   }
 
   onSubmit(form) {
+    this.submitted = true
     this.serverError = ''
+    if(!this.f.valid)
+      return
+
     this.authService.login(this.f.controls['username'].value, this.f.controls['password'].value, this.f.controls['rememberMe'].value)
       .then(user => {
         this.router.navigateByUrl('/home')
@@ -160,10 +161,8 @@ export class LoginForm  {
         console.log('login error',error)
       })
   }
-
 }
 
-@Directive({})
 @Component({
   selector: 'register-form',
   //directives: [MD_INPUT_DIRECTIVES],
@@ -174,26 +173,22 @@ export class LoginForm  {
         <md-input
           ngControl="username" placeholder="Username" autofocus #username="ngForm">
         </md-input>
-        <div *ngIf="!username.valid">Please enter a valid username</div>
-        <br/>
+        <div *ngIf="!username.valid && submitted" class="error-msg">Please enter a valid username</div>
         <md-input
           ngControl="email" placeholder="Email" autofocus #email="ngForm">
         </md-input>
-        <div *ngIf="!email.valid">Please enter a valid email</div>
-        <br/>
+        <div *ngIf="!email.valid && submitted" class="error-msg">Please enter a valid email</div>
         <md-input
           ngControl="password" placeholder="Password" type="password" #password="ngForm">
         </md-input>
-        <div *ngIf="!password.valid">Password must be at least 6 characters</div>
-        <br/>
+        <div *ngIf="!password.valid && submitted" class="error-msg">Password must be at least 6 characters</div>
         <md-input
-          ngControl="passwordRepeat" placeholder="Password" type="password" #passwordRepeat="ngForm">
+          ngControl="passwordRepeat" placeholder="Repeat password" type="password" #passwordRepeat="ngForm">
         </md-input>
-        <div *ngIf="f.hasError('passwordMismatch')">Passwords must match</div>
+        <div *ngIf="f.hasError('passwordMismatch') && submitted" class="error-msg">Passwords must match</div>
+        <div *ngIf="serverError" class="error-msg">{{serverError}}</div>
         <br/>
-        <div *ngIf="serverError">{{serverError}}</div>
-        <br/>
-        <button [disabled]="!f.valid" md-raised-button color="primary">Register</button>
+        <button md-raised-button color="primary">Register</button>
       </form>
   `
 })
@@ -201,6 +196,7 @@ export class RegisterForm  {
 
   f: ControlGroup
   serverError: string
+  submitted: boolean = false
 
   constructor(public appState:AppState, private formBuilder: FormBuilder, private authService: AuthService, private router: Router) {}
 
@@ -214,7 +210,10 @@ export class RegisterForm  {
   }
 
   onSubmit(form) {
+    this.submitted = true
     this.serverError = ''
+    if(!this.f.valid)
+      return
     console.debug('submitting register form', this.f.controls['email'].value)
     this.authService.register(this.f.controls['username'].value, this.f.controls['email'].value, this.f.controls['password'].value)
       .then(user => {
@@ -236,6 +235,68 @@ export class RegisterForm  {
 }
 
 
+
+
+
+@Component({
+  selector: 'reset-password-init',
+  //directives: [MD_INPUT_DIRECTIVES,...[SocialAuth, GoogleAuth]],
+  //pipes: [],
+  // Our list of styles in our component. We may add more to compose many styles together
+  //styles: [require('./login.css')],
+  // Every Angular template is first compiled by the browser before Angular runs it's compiler
+  template: `
+    <div *ngIf="!emailSent">
+      <form [ngFormModel]="f" (ngSubmit)="onSubmit()" autocomplete="off">
+        <md-input
+          ngControl="email" placeholder="Email" autofocus #email="ngForm">
+        </md-input>
+        <div *ngIf="!email.valid && submitted" class="error-msg">A valid email is required</div>
+        <br/>
+        <div *ngIf="serverError" class="error-msg">{{serverError}}</div>
+        <br/>
+        <button md-raised-button color="primary">Reset Password</button>
+      </form>
+    </div>
+    <div *ngIf="emailSent">An email has been sent with a link to reset your password</div>
+  `
+})
+export class ResetPasswordInit  {
+
+  f: ControlGroup
+  serverError: string
+  submitted: boolean = false
+  emailSent: boolean = false
+
+  constructor(private formBuilder: FormBuilder, private authService: AuthService, private router: Router) {}
+
+  ngOnInit() {
+    this.f = this.formBuilder.group({
+      email: ['', Validators.compose([Validators.required, CustomValidators.emailValidator])]
+    })
+  }
+
+  onSubmit(form) {
+    this.submitted = true
+    this.serverError = ''
+    if(!this.f.valid)
+      return
+
+    this.authService.resetPassword(this.f.controls['email'].value)
+      .then(success => {
+        this.emailSent = true
+      }, error => {
+        this.serverError = error['_body']
+        console.log('login error',error)
+      })
+  }
+}
+
+
+
+
+
+
 // TODO Forgot password, Reset password, Confirm email
 
 @Component({
@@ -246,7 +307,7 @@ export class RegisterForm  {
   // We need to tell Angular's Dependency Injection which providers are in our app.
   // We need to tell Angular's compiler which directives are in our template.
   // Doing so will allow Angular to attach our behavior to an element
-  directives: [LoginForm, RegisterForm],
+  directives: [LoginForm, RegisterForm, ResetPasswordInit],
   // We need to tell Angular's compiler which custom pipes are in our template.
   pipes: [],
   // Our list of styles in our component. We may add more to compose many styles together

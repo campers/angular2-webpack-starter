@@ -23,13 +23,11 @@ export class AuthService {
 
     let jwt = this.jwt.fetchJWT()
     if(!jwt) {
-      this.log.info('AuthService: No JWT token')
       return false
     }
 
     const expired = this.jwtHelper.isTokenExpired(jwt)
     if(expired) {
-      this.log.info('AuthService: JWT has expired')
       return false
     }
 
@@ -74,6 +72,16 @@ export class AuthService {
       .then(response => {
         this.jwt.saveJWT(response['id_token'])
       })
+  }
+
+
+  public resetPassword(email: string): Promise<any> {
+    return this.serverService.postP('/account/reset_password/init', {mail:email})
+  }
+
+
+  public resetPasswordFinish(key:string, password: string): Promise<any> {
+    return this.serverService.postP('/account/reset_password/finish', {key:key, newPassword: password})
   }
 }
 

@@ -1,3 +1,20 @@
 #loginCard {
   width: 400px;
 }
+
+.login-tab-content {
+  padding-top: 30px;
+  margin: auto;
+  width :200px;
+}
+
+.login-container {
+  width:100%;
+  padding-top: 20px;
+}
+
+.login-content {
+  margin: auto;
+  width:480px;
+  height:400px;
+}

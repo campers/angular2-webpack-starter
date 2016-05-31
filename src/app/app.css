@@ -32,3 +32,9 @@ footer{
   justify-content: center;
   background: #fff;
 }
+
+.error-msg {
+  color:#b81900;
+  font-size: 12px;
+  padding-bottom: 5px;
+}

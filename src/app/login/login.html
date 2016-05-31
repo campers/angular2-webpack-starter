@@ -1,56 +1,31 @@
-<div class="card-container">
-  <md-card x-large class="sample-content">Your Content Here</md-card>
 
-  <md-card>
-    <md-card-title>Login</md-card-title>
-    <md-card-content>
-      <login-form></login-form>
-    </md-card-content>
+<div class="card-container login-container">
+  <md-card x-large class="sample-content login-content">
+    <md-tab-group>
+      <md-tab>
+        <template md-tab-label>Login</template>
+        <template md-tab-content>
+          <div class="login-tab-content">
+            <login-form></login-form>
+          </div>
+        </template>
+      </md-tab>
+      <md-tab>
+        <template md-tab-label>Register</template>
+        <template md-tab-content>
+          <div class="login-tab-content">
+            <register-form></register-form>
+          </div>
+        </template>
+      </md-tab>
+      <md-tab>
+        <template md-tab-label>Reset Password</template>
+        <template md-tab-content>
+          <div class="login-tab-content">
+            <reset-password-init></reset-password-init>
+          </div>
+        </template>
+      </md-tab>
+    </md-tab-group>
   </md-card>
-
-
-  <md-card>
-    <md-card-title>Register</md-card-title>
-    <md-card-content>
-      <register-form></register-form>
-    </md-card-content>
-  </md-card>
-
-
-
-  <md-card>
-    <md-card-title>Forgot Password</md-card-title>
-    <md-card-content>
-
-      <form (ngSubmit)="forgotPassword(credentials)" autocomplete="off">
-
-        <md-input
-          placeholder="Email"
-          [(ngModel)]="credentials.email"
-          autofocus>
-        </md-input>
-
-        <br/>
-
-        <button md-raised-button color="primary">Submit</button>
-      </form>
-
-    </md-card-content>
-  </md-card>
-
 </div>
-
-
-
-
-
-
-<md-content layout="vertical" flex id="content">
-  <div layout="row" layout-align="center center" layout-fill>
-    <md-whiteframe class="md-whiteframe-z1" layout="column" flex="30" layout-padding>
-      <md-content md-theme="docs-dark">
-
-      </md-content>
-    </md-whiteframe>
-  </div>
-</md-content>
